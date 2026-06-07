@@ -4,13 +4,15 @@ import com.org73n37.crudapp.data.core.BaseEntity;
 import com.org73n37.crudapp.data.weaviate.annotation.WeaviateEntity;
 import com.org73n37.crudapp.logic.spi.CrudStorageProvider;
 import com.org73n37.crudapp.logic.spi.CrudStorageProviderFactory;
-import io.weaviate.client.WeaviateClient;
+import io.weaviate.client6.v1.api.WeaviateClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@ConditionalOnBean(WeaviateClient.class)
 public class WeaviateStorageProviderFactory implements CrudStorageProviderFactory {
     private final WeaviateClient client;
     private final Map<Class<?>, CrudStorageProvider<?>> providers = new ConcurrentHashMap<>();

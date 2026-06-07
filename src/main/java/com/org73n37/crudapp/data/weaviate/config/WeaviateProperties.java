@@ -7,6 +7,7 @@ public class WeaviateProperties {
     private String scheme = "http";
     private String host = "localhost:8080";
     private String apiKey;
+    private int grpcPort = 50051;
 
     public String getScheme() { return scheme; }
     public void setScheme(String scheme) { this.scheme = scheme; }
@@ -16,4 +17,7 @@ public class WeaviateProperties {
 
     public String getApiKey() { return apiKey; }
     public void setApiKey(String apiKey) { this.apiKey = apiKey; }
+
+    public int getGrpcPort() { return grpcPort; }
+    public void setGrpcPort(int grpcPort) { this.grpcPort = grpcPort; }
 }

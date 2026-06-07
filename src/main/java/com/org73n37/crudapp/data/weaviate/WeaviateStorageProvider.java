@@ -1,12 +1,12 @@
 package com.org73n37.crudapp.data.weaviate;
 
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.json.JsonMapper;
+import io.weaviate.client6.v1.api.collections.query.Filter;
 import com.org73n37.crudapp.data.core.BaseEntity;
 import com.org73n37.crudapp.logic.spi.CrudStorageProvider;
 import com.org73n37.crudapp.logic.core.CrudService.Page;
 import com.org73n37.crudapp.infrastructure.security.TenantContext;
-import io.weaviate.client.WeaviateClient;
+import io.weaviate.client6.v1.api.WeaviateClient;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -16,16 +16,16 @@ public class WeaviateStorageProvider<T extends BaseEntity> implements CrudStorag
     private final Class<T> entityClass;
     private final WeaviateClient client;
     private final String collectionName;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
     private final AtomicLong idSequence = new AtomicLong(1);
 
     public WeaviateStorageProvider(Class<T> entityClass, WeaviateClient client, String collectionName) {
         this.entityClass = entityClass;
         this.client = client;
         this.collectionName = collectionName;
-        this.objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .configure(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.objectMapper = JsonMapper.builder()
+                .disable(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .build();
         ensureCollectionExists();
         initializeSequence();
     }
@@ -109,9 +109,9 @@ public class WeaviateStorageProvider<T extends BaseEntity> implements CrudStorag
         try {
             UUID uuid = getUuidFromLong(id);
             var collection = client.collections.use(collectionName);
-            var response = collection.query.fetchObjectById(uuid);
-            if (response != null && response.properties() != null) {
-                T entity = objectMapper.convertValue(response.properties(), entityClass);
+            var response = collection.query.fetchObjectById(uuid.toString());
+            if (response.isPresent() && response.get().properties() != null) {
+                T entity = objectMapper.convertValue(response.get().properties(), entityClass);
                 if (getActiveTenantId().equals(entity.getTenantId())) {
                     return Optional.of(entity);
                 }
@@ -143,7 +143,7 @@ public class WeaviateStorageProvider<T extends BaseEntity> implements CrudStorag
 
             // Check if object already exists to update it, otherwise insert it
             if (existsById(entity.getId())) {
-                collection.data.update(uuid, properties);
+                collection.data.update(uuid.toString(), builder -> builder.properties(properties));
             } else {
                 collection.data.insert(properties, builder -> builder.uuid(uuid.toString()));
             }
@@ -158,7 +158,7 @@ public class WeaviateStorageProvider<T extends BaseEntity> implements CrudStorag
         try {
             UUID uuid = getUuidFromLong(id);
             var collection = client.collections.use(collectionName);
-            collection.data.deleteMany(collection.filter.byId().equal(uuid));
+            collection.data.deleteMany(Filter.property("id").eq(uuid.toString()));
         } catch (Exception e) {
             // Ignore
         }

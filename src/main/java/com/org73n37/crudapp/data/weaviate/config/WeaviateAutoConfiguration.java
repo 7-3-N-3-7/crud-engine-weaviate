@@ -1,8 +1,7 @@
 package com.org73n37.crudapp.data.weaviate.config;
 
-import io.weaviate.client.Config;
-import io.weaviate.client.WeaviateClient;
-import io.weaviate.client.v1.auth.Authentication;
+import io.weaviate.client6.v1.api.WeaviateClient;
+import io.weaviate.client6.v1.api.Authentication;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -17,10 +16,32 @@ public class WeaviateAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public WeaviateClient weaviateClient(WeaviateProperties properties) {
-        Config config = new Config(properties.getScheme(), properties.getHost());
-        if (properties.getApiKey() != null && !properties.getApiKey().isBlank()) {
-            config.setAuthConfig(Authentication.apiKey(properties.getApiKey()));
+        String host = properties.getHost();
+        String hostName = host;
+        int port = 8080;
+        if (host.contains(":")) {
+            String[] parts = host.split(":");
+            hostName = parts[0];
+            try {
+                port = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException e) {
+                // Keep default
+            }
         }
-        return new WeaviateClient(config);
+        final String finalHost = hostName;
+        final int finalPort = port;
+        final int finalGrpcPort = properties.getGrpcPort();
+
+        return WeaviateClient.connectToCustom(conn -> {
+            conn.scheme(properties.getScheme())
+                .httpHost(finalHost)
+                .httpPort(finalPort)
+                .grpcHost(finalHost)
+                .grpcPort(finalGrpcPort);
+            if (properties.getApiKey() != null && !properties.getApiKey().isBlank()) {
+                conn.authentication(Authentication.apiKey(properties.getApiKey()));
+            }
+            return conn;
+        });
     }
 }

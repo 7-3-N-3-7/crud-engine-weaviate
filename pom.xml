@@ -27,5 +27,12 @@
 			<artifactId>client6</artifactId>
 			<version>6.2.0</version>
 		</dependency>
+
+		<!-- Jackson Databind -->
+		<dependency>
+			<groupId>tools.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
 	</dependencies>
 </project>
