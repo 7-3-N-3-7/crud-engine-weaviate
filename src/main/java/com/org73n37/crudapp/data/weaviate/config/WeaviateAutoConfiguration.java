@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnClass(WeaviateClient.class)
 @EnableConfigurationProperties(WeaviateProperties.class)
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+    prefix = "crud.engine.weaviate", name = "enabled", havingValue = "true", matchIfMissing = false
+)
 public class WeaviateAutoConfiguration {
 
     @Bean

@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "crud.engine.weaviate")
 public class WeaviateProperties {
+    private boolean enabled = false;
     private String scheme = "http";
     private String host = "localhost:8080";
     private String apiKey;
@@ -20,4 +21,7 @@ public class WeaviateProperties {
 
     public int getGrpcPort() { return grpcPort; }
     public void setGrpcPort(int grpcPort) { this.grpcPort = grpcPort; }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }
