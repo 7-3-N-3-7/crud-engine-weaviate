@@ -1,12 +1,12 @@
 package com.org73n37.crudapp.data.weaviate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.datatype.jsr310.JavaTimeModule;
 import com.org73n37.crudapp.data.core.BaseEntity;
 import com.org73n37.crudapp.logic.spi.CrudStorageProvider;
 import com.org73n37.crudapp.logic.core.CrudService.Page;
 import com.org73n37.crudapp.infrastructure.security.TenantContext;
-import io.weaviate.client6.WeaviateClient;
+import io.weaviate.client.WeaviateClient;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -25,7 +25,7 @@ public class WeaviateStorageProvider<T extends BaseEntity> implements CrudStorag
         this.collectionName = collectionName;
         this.objectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
-                .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                .configure(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         ensureCollectionExists();
         initializeSequence();
     }

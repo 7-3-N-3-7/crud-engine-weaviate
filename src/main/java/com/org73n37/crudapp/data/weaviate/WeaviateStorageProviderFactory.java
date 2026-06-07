@@ -4,7 +4,7 @@ import com.org73n37.crudapp.data.core.BaseEntity;
 import com.org73n37.crudapp.data.weaviate.annotation.WeaviateEntity;
 import com.org73n37.crudapp.logic.spi.CrudStorageProvider;
 import com.org73n37.crudapp.logic.spi.CrudStorageProviderFactory;
-import io.weaviate.client6.WeaviateClient;
+import io.weaviate.client.WeaviateClient;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

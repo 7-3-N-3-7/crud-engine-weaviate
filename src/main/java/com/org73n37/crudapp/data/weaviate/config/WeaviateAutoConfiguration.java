@@ -1,8 +1,8 @@
 package com.org73n37.crudapp.data.weaviate.config;
 
-import io.weaviate.client6.Config;
-import io.weaviate.client6.WeaviateClient;
-import io.weaviate.client6.v1.auth.Authentication;
+import io.weaviate.client.Config;
+import io.weaviate.client.WeaviateClient;
+import io.weaviate.client.v1.auth.Authentication;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
